@@ -1,0 +1,71 @@
+services:
+  nginx:
+    hostname: "${ENV_NAME}-nginx"
+    image: nginx:${NGINX_VERSION:-1.29}-alpine
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+    ports:
+      - "8080:80"
+    networks:
+      - transport_park_api_network
+    depends_on:
+      - php-fpm
+    volumes:
+      - .${WEB_ROOT:-/app}/:/var/www/html:cached
+      - ./docker/nginx/nginx-symfony.conf:/etc/nginx/conf.d/default.conf
+
+  php-fpm:
+    hostname: "${ENV_NAME}-php-fpm"
+    image: wardenenv/php-fpm:${PHP_VERSION:-8.4}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-symfony}
+      - MYSQL_USER=${MYSQL_USER:-symfony}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-symfony}
+      - MYSQL_DATABASE_TEST=${MYSQL_DATABASE:-symfony_test}
+      - MYSQL_USER_TEST=${MYSQL_USER:-symfony_test}
+      - MYSQL_PASSWORD_TEST=${MYSQL_PASSWORD:-symfony_test}
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+      - COMPOSER_VERSION=${COMPOSER_VERSION:-2}
+      - COMPOSER_MEMORY_LIMIT=-1
+      - HISTFILE=/bash_history/.bash_history
+      - CHOWN_DIR_LIST=/bash_history
+    networks:
+      - transport_park_api_network
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .${WEB_ROOT:-/app}/:/var/www/html:cached
+      - ./docker/php/zz-config.ini:/etc/php.d/zz-config.ini
+      - bashhistory:/bash_history
+
+  db:
+    hostname: "${ENV_NAME}-mariadb"
+    image: wardenenv/${MYSQL_DISTRIBUTION:-mariadb}:${MYSQL_DISTRIBUTION_VERSION:-${MARIADB_VERSION:-10.6}}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-symfony}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-symfony}
+      - MYSQL_USER=${MYSQL_USER:-symfony}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-symfony}
+      - MYSQL_HISTFILE=/sql_history/.sql_history
+    networks:
+      - transport_park_api_network
+    volumes:
+      - dbdata:/var/lib/mysql
+      - sqlhistory:/sql_history
+      - ./docker/db/mariadb.cnf:/etc/mysql/conf.d/warden.cnf:cached
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  transport_park_api_network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  sqlhistory:
+  bashhistory:
