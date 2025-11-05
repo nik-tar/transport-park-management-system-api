@@ -58,7 +58,7 @@ docker compose exec php bin/console doctrine:migrations:migrate --no-interaction
 ## API Documentation
 
 ### Base URL
-- **Docker:** `http://localhost:8080/api`
+- **Docker:** `http://{APP_DOMAIN}:8080/api`
 
 ### Endpoints
 
