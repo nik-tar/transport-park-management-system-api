@@ -9,7 +9,6 @@ REST API for transport park management, including trucks, trailers, fleet sets (
 - **Doctrine ORM**
 - **MariaDB 10.6.21**
 - **Docker & Docker Compose**
-- **PHPUnit** for testing
 
 ## Requirements
 
