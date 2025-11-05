@@ -4,13 +4,13 @@ namespace App\Entity;
 
 use App\Enum\ServiceOrderStatus;
 use App\Enum\ServiceOrderSubject;
-use App\Repository\ServiceOrderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ServiceOrderRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'service_order')]
 class ServiceOrder
 {
     #[ORM\Id]

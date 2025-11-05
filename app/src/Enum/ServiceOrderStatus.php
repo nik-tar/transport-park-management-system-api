@@ -6,8 +6,8 @@ namespace App\Enum;
 
 enum ServiceOrderStatus: string
 {
-    case OPEN = 'OPEN';
-    case IN_PROGRESS = 'IN_PROGRESS';
-    case DONE = 'DONE';
-    case CANCELED = 'CANCELED';
+    case Open = 'Open';
+    case InProgress = 'InProgress';
+    case Done = 'Done';
+    case Cancelled = 'Cancelled';
 }

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\DriverRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +9,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: DriverRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'driver')]
 #[ORM\Index(name: 'IDX_DRIVER_NAME', columns: ['name'])]
 #[ORM\HasLifecycleCallbacks]
 class Driver
@@ -44,7 +44,7 @@ class Driver
 
     public function getId(): ?Ulid
     {
-        return $this->id->toString();
+        return $this->id;
     }
 
     public function getName(): ?string

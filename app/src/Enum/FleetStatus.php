@@ -6,7 +6,7 @@ namespace App\Enum;
 
 enum FleetStatus: string
 {
-    case WORKS = 'Works';
-    case FREE = 'Free';
-    case DOWNTIME = 'Downtime';
+    case Works = 'Works';
+    case Free = 'Free';
+    case Downtime = 'Downtime';
 }

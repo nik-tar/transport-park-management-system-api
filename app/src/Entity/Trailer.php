@@ -2,19 +2,22 @@
 
 namespace App\Entity;
 
+use App\DTO\Entity\DetailsInterface;
+use App\DTO\Entity\TrailerDetails;
+use App\Entity\Contract\DetailedEntityInterface;
 use App\Entity\Contract\ServiceableInterface;
 use App\Enum\ServiceOrderSubject;
-use App\Repository\TrailerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: TrailerRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'trailer')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity('plate')]
-class Trailer implements ServiceableInterface
+class Trailer implements ServiceableInterface, DetailedEntityInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME, unique: true)]
@@ -28,6 +31,9 @@ class Trailer implements ServiceableInterface
 
     #[ORM\OneToOne(mappedBy: 'trailer')]
     private ?FleetSet $fleetSet = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $inService;
 
     #[ORM\Column]
     #[Assert\DateTime()]
@@ -56,6 +62,18 @@ class Trailer implements ServiceableInterface
     public function getFleetSet(): ?FleetSet
     {
         return $this->fleetSet;
+    }
+
+    public function isInService(): bool
+    {
+        return $this->inService;
+    }
+
+    public function setInService(bool $inService): static
+    {
+        $this->inService = $inService;
+
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
@@ -97,6 +115,17 @@ class Trailer implements ServiceableInterface
 
     public function getSubjectType(): ServiceOrderSubject
     {
-        return ServiceOrderSubject::TRAILER;
+        return ServiceOrderSubject::Trailer;
+    }
+
+    /**
+     * @return TrailerDetails
+     */
+    public function getDetails(): DetailsInterface
+    {
+        return new TrailerDetails(
+            plateNumber: $this->plate,
+            isInService: $this->inService,
+        );
     }
 }

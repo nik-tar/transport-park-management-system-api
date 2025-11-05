@@ -6,7 +6,7 @@ namespace App\Enum;
 
 enum ServiceOrderSubject: string
 {
-    case TRUCK = 'truck';
-    case TRAILER = 'trailer';
-    case FLEET_SET = 'fleet_set';
+    case Truck = 'Truck';
+    case Trailer = 'Trailer';
+    case FleetSet = 'FleetSet';
 }

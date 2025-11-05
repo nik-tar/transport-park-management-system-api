@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\DTO\Entity\DetailsInterface;
+use App\DTO\Entity\FleetSetDetails;
+use App\Entity\Contract\DetailedEntityInterface;
 use App\Entity\Contract\ServiceableInterface;
 use App\Enum\ServiceOrderSubject;
-use App\Repository\FleetSetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,9 +14,10 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: FleetSetRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'fleet_set')]
 #[ORM\HasLifecycleCallbacks]
-class FleetSet implements ServiceableInterface
+class FleetSet implements ServiceableInterface, DetailedEntityInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME, unique: true)]
@@ -133,6 +136,19 @@ class FleetSet implements ServiceableInterface
 
     public function getSubjectType(): ServiceOrderSubject
     {
-        return ServiceOrderSubject::FLEET_SET;
+        return ServiceOrderSubject::FleetSet;
+    }
+
+    public function getDetails(): DetailsInterface
+    {
+        $truck = $this->getTruck();
+        $trailer = $this->getTrailer();
+
+        return new FleetSetDetails(
+            truckId: $truck->getId()->toString(),
+            trailerId: $trailer->getId()->toString(),
+            driversCount: $this->getDrivers()->count(),
+            isInService: $truck->isInService() && $trailer->isInService(),
+        );
     }
 }
