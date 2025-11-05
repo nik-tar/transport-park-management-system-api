@@ -26,7 +26,7 @@ git clone <repository-url>
 cd transport-park-management-system-api
 ```
 
-2. **Create .env file (optional, .env.example will be used automatically):**
+2. **Create .env file:**
 ```bash
 cp .env.example .env
 # Edit .env if needed with your custom values
